@@ -1,51 +1,72 @@
-(function(global, jQuery, undefined){
-var	DATA_NS = 'data-ft-',
-	WRAP_HTML = '<div class="tcom-wrap" style="margin:0px; padding:0px; width:100%; height:100%; position:relative;"></div>',
-	FILTER_HTML = '<div class="tcom-filter" style="background-color:#ccc; width:17px; height:17px; position:absolute; bottom:0px; right:0px; background-image: url(./img/filter_off.png);"> </div>',
+(function(jQuery, undefined){
+/*@cc_on _d=document;eval('var document=_d')@*/
 
-	_extend,
-	_addPop,
-	_pop,
-	addFilter,
-	filterTable;
+var getAbsoluteRect = function(node){
+	var	rect = node.getBoundingClientRect(),
+		scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft,
+		scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
 
-_extend = function(dest, source){
-	var prop;
-	for (prop in source){
-		dest[prop] = source[prop];
+	return {
+		left : rect.left + scrollLeft,
+		top : rect.top + scrollTop,
+		right : rect.right + scrollLeft,
+		bottom : rect.bottom + scrollTop
+	};
+};
+
+var FORM_HTML = '<form id="filterable" style="width:1px; height:1px; position:absolute; top:0px; left:0px; border:0px; margin:0px; padding:0px;"> </form>';
+var addForm = function(){
+	var $form = $('#filterable');
+	if (!$form[0]){
+		$('body').append(FORM_HTML);
 	}
-	return dest;
+}
+
+var FILTER_HTML = '<div class="ft_filter ft_filter_off"> </div>';
+var addFilterButton = function($cell){
+	addForm();
+	var cell = $cell.get(0);
+	var rect = getAbsoluteRect(cell);
+	var $btn = $(FILTER_HTML);
+	$btn.css('left', rect.right - $btn.width())
+		.css('top', rect.bottom - $btn.height());
+	$('#filterable').append($btn);
 };
 
-_addPop = function($wrap){
-	$pop = $('#pop').hide();
-	return $pop;
+var POP_HTML = '<div class="ft_pop"></div>';
+var addPop = function($cell){
+	var cell = $cell.get(0);
+	var $pop = $(POP_HTML);
+	var	rect = getAbsoluteRect(cell);
+	var width = $pop.width();
+	alert(width);
+	var	left = rect.right - width,
+		top = rect.bottom;
+	if (left < 0){
+		left = 0;
+	}
+
+	$pop.css('left', left )
+		.css('top', top);
+	$('#filterable').append($pop);
+}
+
+var setOptions = function($pop, options){
+	if (options.sort){
+		setSort($pop);
+	}
+	if (opsions.filter){
+		setFilter($pop);
+	}
 };
 
-_pop = function($pop){
-	$pop.toggle();
+
+
+var filterable = function(){
+
 };
 
-addFilter = function($cell, options, init){
-	//フィルタアイコン追加
-	var $wrap = $cell.wrapInner(WRAP_HTML).children('.tcom-wrap');
-	var $filter = $wrap.append(FILTER_HTML).children('.tcom-filter');
-	var col = $cell.prevAll('td, th').size();
-	
-	var $pop = _addPop($wrap);
-	
-	$filter.click(function(){
-		_pop($pop);
-	});
-};
+window.addFilterButton = addFilterButton;
+window.addPop = addPop;
 
-
-filterTable = {
-	addFilter: addFilter
-};
-
-//global変数にセット
-global.filterTable = filterTable;
-_extend(global, filterTable);
-
-})(this, jQuery);
+})(jQuery);

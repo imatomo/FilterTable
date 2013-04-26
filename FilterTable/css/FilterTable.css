@@ -1,0 +1,30 @@
+@charset "UTF-8";
+/** フィルターポップアップスタイル */
+.ft_pop {
+	position:absolute;
+	background-color:#eee;
+	color:#111;
+	font-size:0.8em;
+	width:15em;
+	height:25em;
+	box-shadow:3px 3px 3px;
+	border-radius: 5px;
+	border: 1px #000 solid;
+	padding: 6px;
+}
+
+/** Filter Button */
+.ft_filter {
+	position:absolute;
+	width:17px;
+	height:17px;
+}
+.ft_filter_on {
+	background-image:url("../img/filter_on.png");
+	background-repeat:no-repeat;
+}
+.ft_filter_off {
+	background-image:url("../img/filter_off.png");
+	background-repeat:no-repeat;
+}
+
