@@ -1,4 +1,10 @@
 @charset "UTF-8";
+/**  */
+.ft-bofore_set {
+	position: absolute !important;
+	visibility: hidden !important;
+}
+
 /** フィルターポップアップスタイル */
 .ft_pop {
 	position:absolute;
@@ -11,6 +17,7 @@
 	border-radius: 5px;
 	border: 1px #000 solid;
 	padding: 6px;
+	visibility: hidden;
 }
 
 /** Filter Button */
