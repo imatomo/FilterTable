@@ -4,13 +4,13 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="./css/FilterTable.css">
 	<script language="javascript" type="text/javascript" src="./js/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="./js/com.js"></script>
 	<script language="javascript" type="text/javascript" src="./js/filterTable.js"></script>
 	<script>
 $(function(){
 	var testf = function(){
 		$('table tr:nth-child(1)').children('td, th').each(function(){
-			addFilterButton($(this));
-			addPop($(this));
+			addFilter($(this));
 		});
 	};
 	$('#test').click(testf)
@@ -22,16 +22,20 @@ $(function(){
 	<button id="test" style="width:500px;">test</button>
 	<table>
 		<tr>
-			<th>テスト</th><td>テスト２</td>
+			<th>テスト1</th><td>テスト２</td><th>テスト3</th><td>テスト4</td>
 		</tr>
-		<tr>
-			<td>バリュー１</td><td>バリュー２</td>
-		</tr>
+		<tr><td>しずおか</td><td>静岡</td><td>4,938</td><td>1</td></tr>
+		<tr><td>ふくしま</td><td>福島</td><td>2,743</td><td>2</td></tr>
+		<tr><td>さいたま</td><td>埼玉</td><td>1,938</td><td>3</td></tr>
+		<tr><td>かがわ</td><td>香川</td><td>3,463</td><td>4</td></tr>
+		<tr><td>ちば</td><td>千葉</td><td>6,745</td><td>5</td></tr>
+		<tr><td>ほっかいどう</td><td>北海道</td><td>234</td><td>6</td></tr>
+		<tr><td>とうきょう</td><td>東京</td><td>8,334</td><td>7</td></tr>
+		<tr><td>おおさか</td><td>大阪</td><td>2,365</td><td>8</td></tr>
+		<tr><td>きょうと</td><td>京都</td><td>9,432</td><td>9</td></tr>
+		<tr><td>あいち</td><td>愛知</td><td>1,342</td><td>10</td></tr>
+		<tr><td>ふくおか</td><td>福岡</td><td>5</td><td>11</td></tr>
 	</table>
-</div>
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-<div id="pop">
-aaaa
 </div>
 </body>
 </html>

@@ -1,72 +1,222 @@
-(function(jQuery, undefined){
+//(function(jQuery, undefined){
 /*@cc_on _d=document;eval('var document=_d')@*/
 
-var getAbsoluteRect = function(node){
-	var	rect = node.getBoundingClientRect(),
-		scrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft,
-		scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+//===============================================================
+// 定数
+//===============================================================//
+var
+	CLS_BEFORE_SET = 'ft_before_set',
 
-	return {
-		left : rect.left + scrollLeft,
-		top : rect.top + scrollTop,
-		right : rect.right + scrollLeft,
-		bottom : rect.bottom + scrollTop
+	DATA_FILTER_ID = 'data-ft-id',
+
+	PLACE_HTML = '<form id="filterable" style="width:1px; height:1px; position:absolute; top:0px; left:0px; border:0px; margin:0px; padding:0px;"> </form>',
+	FILTER_HTML = '<div class="ft_filter ft_filter_off"> </div>',
+	POP_HTML = '<div class="ft_pop ft_pop_hidden"></div>',
+	ASC_HTML = '<div class="">昇順</div>',
+	DESC_HTML = '<div class="">降順</div>',
+	/** デフォルトオプション */
+	DEFAULT_OPTIONS = {
+		sort : true,
+		filter : true,
+		parent : 'parent',
+		value : function(){
+			return $(this).text();
+		},
+		compare : function(x, y){
+			if (x > y){
+				return 1;
+			} else if (x < y){
+				return -1;
+			}
+			return 0;
+		}
 	};
+
+
+//===============================================================
+// 全体変数
+//===============================================================//
+/** 要素追加場所 */
+var $place = null;
+//フィルター管理変数
+var filter_list = [];
+
+//===============================================================
+// 全体管理
+//===============================================================//
+var pushFilterList = function(id, parent, node, options){
+	filter_list.push({
+		id: id,
+		parent: parent,
+		node: node,
+		options: options
+	});
 };
 
-var FORM_HTML = '<form id="filterable" style="width:1px; height:1px; position:absolute; top:0px; left:0px; border:0px; margin:0px; padding:0px;"> </form>';
-var addForm = function(){
-	var $form = $('#filterable');
-	if (!$form[0]){
-		$('body').append(FORM_HTML);
+var getFilterList = function(){
+	return filter_list;
+};
+
+//===============================================================
+//基本関数
+//===============================================================//
+//===============================================================
+// 画面要素追加関数
+//===============================================================//
+/** 要素追加場所追加 */
+var addPlace = function(){
+	if (!$('#filterable')[0]){
+		$('body').append(PLACE_HTML);
 	}
-}
-
-var FILTER_HTML = '<div class="ft_filter ft_filter_off"> </div>';
-var addFilterButton = function($cell){
-	addForm();
-	var cell = $cell.get(0);
-	var rect = getAbsoluteRect(cell);
-	var $btn = $(FILTER_HTML);
-	$btn.css('left', rect.right - $btn.width())
-		.css('top', rect.bottom - $btn.height());
-	$('#filterable').append($btn);
+	return $('#filterable');
 };
 
-var POP_HTML = '<div class="ft_pop"></div>';
-var addPop = function($cell){
-	var cell = $cell.get(0);
+/** フィルターボタン追加 */
+var addFilterButton = function($obj){
+	var rect = getAbsoluteRect($obj.get(0));
+	var $btn = $(FILTER_HTML);
+	$btn.addClass(CLS_BEFORE_SET);
+	$place.append($btn);
+	$btn.css('left', rect.right - $btn.width())
+	.css('top', rect.bottom - $btn.width());
+	$btn.removeClass(CLS_BEFORE_SET);
+
+	return $btn;
+};
+
+/** ポップ追加 */
+var addPop = function($btn){
+	var btn = $btn.get(0);
 	var $pop = $(POP_HTML);
-	var	rect = getAbsoluteRect(cell);
+	$pop.addClass(CLS_BEFORE_SET);
+	$place.append($pop);
+	var	rect = getAbsoluteRect(btn);
 	var width = $pop.width();
-	alert(width);
 	var	left = rect.right - width,
 		top = rect.bottom;
 	if (left < 0){
 		left = 0;
 	}
-
 	$pop.css('left', left )
 		.css('top', top);
-	$('#filterable').append($pop);
-}
+	$pop.removeClass(CLS_BEFORE_SET);
 
-var setOptions = function($pop, options){
-	if (options.sort){
-		setSort($pop);
-	}
-	if (opsions.filter){
-		setFilter($pop);
-	}
+	$pop.attr(DATA_FILTER_ID);
+
+	return $pop;
 };
 
+//===============================================================
+//画面追加要素操作関数
+//===============================================================//
+var togglePop = function(ft_id){
+	var $pop = $('.ft_pop[' + DATA_FILTER_ID + '=' + ft_id + ']');
+	if ($pop.hasClass('ft_pop_hidden')){
+		$pop.removeClass('ft_pop_hidden').addClass('ft_pop_show');
+	} else {
+		$('.ft_pop_show').removeClass('ft_pop_show');
+		$pop.removeClass('ft_pop_show').addClass('ft_pop_hidden');
+	}
+};
+//===============================================================
+//フィルタ関数設定
+//===============================================================//
+/** ポップにソート関数をセット */
+var setSort = function($pop, parent, children_expr, getVal, compare){
+	$asc = $(ASC_HTML);
+	$desc = $(DESC_HTML);
+	$pop.append($asc);
+	$pop.append($desc);
+
+	//昇順関数のセット
+	$asc.click(function(){
+		sortCore($(parent), children_expr, getVal, compare);
+	});
+
+	//降順関数のセット
+	$desc.click(function(){
+		sortCore($(parent), children_expr, getVal, compare, true);
+	});
+};
+
+
+///**
+// * 要素をソートする。
+// * @param {jQueryObject} ソート対象の親要素。この中で並べ替える。
+// * @param {String} ソート対象となる配列jQueryオブジェクト表現。親要素.children(expr)で探す。
+// * @param {String} 内容を取得するセル要素の表現。
+// * @param {function} セル要素から値を取得する関数。
+// * @param {int} 1:昇順, -1:降順
+// * @param {function} 比較用関数（数値を返す）
+// */
+//var domSort = function($parent, sort, base, getVal, asc, comppare, mode){
+//	var x, y;
+//	var $sortarray = $parent.children(sort).sort(function(a,b){
+//		x = getVal.call($(a).find(base).get(0));
+//		y = getVal.call($(b).find(base).get(0));
+//		return compare(x, y) * asc;
+//	});
+//	$parent.append($sortarray);
+//};
+
+
+//===============================================================
+// フィルタ用の値取得関数
+//===============================================================//
+var getParent = function(parent){
+	if (parent == DEFAULT_OPTIONS.parent){
+		return $(this).parent().get(0);
+	} else {
+
+	}
+
+};
+
+
+//===============================================================
+// ユースケース関数
+//===============================================================//
+
+
+var addFilter = function($obj, custom_options){
+	if (!$place){
+		$place = addPlace();
+	}
+	var options = makeMargeObject(DEFAULT_OPTIONS, custom_options);
+	alert($obj.length);
+	$obj.each(function(){
+		var ft_id = sequence(DATA_FILTER_ID);
+
+		//要素にIDをセット
+		var $this = $(this);
+		$this.attr(DATA_FILTER_ID, ft_id);
+
+		//ボタンを追加しIDをセット
+		var $btn = addFilterButton($this);
+		$btn.attr(DATA_FILTER_ID, ft_id);
+
+		//ポップを追加しIDをセット
+		var $pop = addPop($btn);
+		$pop.attr(DATA_FILTER_ID, ft_id);
+
+		//ボタン押下時の関数をセット
+		$btn.click(function(){
+			//togglePop
+			togglePop(ft_id);
+		});
+
+		var parent = getParent.call(this, options.parent);
+
+		//追加したフィルターをフィルター管理変数に追加
+		pushFilterList(ft_id, parent, this, options);
+
+		setSort($pop, parent, 'tr', options.value, opstions.compare);
+	});
+
+};
 
 
 var filterable = function(){
-
+	var options = Object.create(DEFAULT_OPTIONS);
 };
-
-window.addFilterButton = addFilterButton;
-window.addPop = addPop;
-
-})(jQuery);
+//})();
