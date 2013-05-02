@@ -29,7 +29,7 @@ var makeMargeObject = function(dest, source){
 var sequence = (function(){
 	var nameCache = {};
 	var func = function(name){
-		if (nameCache[name] === undefined){
+		if (!nameCache[name] === undefined){
 			nameCache[name] = 0;
 		} else {
 			nameCache[name]++;

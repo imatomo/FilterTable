@@ -17,6 +17,7 @@
 	border-radius: 5px;
 	border: 1px #000 solid;
 	padding: 6px;
+	visibility: hidden;
 }
 
 .ft_pop_hidden {

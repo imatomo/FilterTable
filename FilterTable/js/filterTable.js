@@ -158,7 +158,42 @@ var setSort = function($pop, parent, children_expr, getVal, compare){
 //	});
 //	$parent.append($sortarray);
 //};
+//===============================================================
+// ソート関数
+//===============================================================//
+var sortTableSimple = function($parent, row, col, getVal, compare, desc){
+	var startRow = row - 1;
+	var tmp = [];
+	var $target = $parent.children('tr:gt(' + startRow + ')');
+	var _compare = (function(){
+		if (desc === true){
+			return function(x, y){
+				return -1 * compare(x, y);
+			};
+		} else {
+			return compare;
+		}
+	})();
 
+	$target.each(function(){
+		var $this = $(this);
+		var $cell = $this.children().eq(col);
+		var val = getVal.call($cell.get(0));
+		tmp.push({
+			v : val,
+			o : $this
+		});
+	});
+
+	tmp.sort(function(x, y){
+		return _compare(x.v, y.v);
+	});
+
+	var len = tmp.length;
+	for (var i = 0; i < len; i++){
+		$parent.append(tmp[i].o);
+	}
+};
 
 //===============================================================
 // フィルタ用の値取得関数
@@ -172,6 +207,98 @@ var getParent = function(parent){
 
 };
 
+//===============================================================
+//テーブル分析関数
+//===============================================================//
+var sortAnalysis = function($trs){
+
+	return true;
+};
+
+var analysisTr = function($tr, prevObj){
+	var length = 0;
+	var $cells = $tr.children();
+
+	var colspans = [];
+	var rowspans = [];
+
+	var index = 0;
+	$tr.children().each(function(){
+		var colspan = 1;
+		var rowspan = 1;
+		var strColspan = null;
+		var strRowspan = null;
+
+		if (obj){
+			for (; obj.rowspans[index] != undefined && obj.rowspans[index] > 1; index++){
+				rowspans[index] = obj.rowspans[index] - 1;
+				colspans[index] = 0;
+			}
+		}
+
+
+		var $this = $(this);
+		if (strColspan = $this.attr('colspan')){
+			colspan = Number(strColspan);
+		}
+
+		if (strRowspan = $this.attr('rowspan')){
+			rowspan = Number(strRowspan);
+		}
+
+		colspans[length] = colspan;
+		colspans[length] = rowspan;
+		for (var i = 0; i < colspan; i++){
+			colspans.push(0);
+			rowspans.push(0);
+		}
+		length += colspan;
+	});
+
+
+	if (prevObj){
+		if (prevObj.rowspans[index]){
+
+		}
+	}
+
+
+
+	for (var i = 0; i < $cells.length; i++){
+		if (obj){
+
+		}
+
+	}
+	$tr.children().each(function(){
+		var colspan = 1;
+		var rowspan = 1;
+		var strColspan = null;
+		var strRowspan = null;
+
+		var $this = $(this);
+		if (strColspan = $this.attr('colspan')){
+			colspan = Number(strColspan);
+		}
+
+		if (strRowspan = $this.attr('rowspan')){
+			rowspan = Number(strRowspan);
+		}
+
+		colspans[length] = colspan;
+		colspans[length] = rowspan;
+		for (var i = 0; i < colspan; i++){
+			colspans.push(0);
+			rowspans.push(0);
+		}
+		length += colspan;
+	});
+	return {
+		length : length,
+		colspans : colspans,
+		rowspans : rowspans
+	};
+};
 
 //===============================================================
 // ユースケース関数
@@ -183,7 +310,6 @@ var addFilter = function($obj, custom_options){
 		$place = addPlace();
 	}
 	var options = makeMargeObject(DEFAULT_OPTIONS, custom_options);
-	alert($obj.length);
 	$obj.each(function(){
 		var ft_id = sequence(DATA_FILTER_ID);
 
