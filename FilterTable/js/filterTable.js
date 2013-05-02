@@ -215,6 +215,14 @@ var sortAnalysis = function($trs){
 	return true;
 };
 
+var analysisTbody = function($tbody){
+	var result = [];
+	$tbody.children('tr').each(function(){
+		result.push(analysisTr($(this)));
+	});
+	return result;
+}
+
 var analysisTr = function($tr, prevObj){
 	var length = 0;
 	var $cells = $tr.children();
@@ -222,7 +230,6 @@ var analysisTr = function($tr, prevObj){
 	var colspans = [];
 	var rowspans = [];
 
-	var index = 0;
 	$tr.children().each(function(){
 		var colspan = 1;
 		var rowspan = 1;
@@ -230,13 +237,12 @@ var analysisTr = function($tr, prevObj){
 		var strRowspan = null;
 
 		if (obj){
-			for (; obj.rowspans[index] != undefined && obj.rowspans[index] > 1; index++){
-				rowspans[index] = obj.rowspans[index] - 1;
-				colspans[index] = 0;
+			for (; obj.rowspans[length] != undefined && obj.rowspans[length] > 1; length++){
+				rowspans[length] = obj.rowspans[length] - 1;
+				colspans[length] = 0;
 			}
 		}
 
-
 		var $this = $(this);
 		if (strColspan = $this.attr('colspan')){
 			colspan = Number(strColspan);
@@ -250,49 +256,11 @@ var analysisTr = function($tr, prevObj){
 		colspans[length] = rowspan;
 		for (var i = 0; i < colspan; i++){
 			colspans.push(0);
-			rowspans.push(0);
+			rowspans.push(rowspan);
 		}
 		length += colspan;
 	});
 
-
-	if (prevObj){
-		if (prevObj.rowspans[index]){
-
-		}
-	}
-
-
-
-	for (var i = 0; i < $cells.length; i++){
-		if (obj){
-
-		}
-
-	}
-	$tr.children().each(function(){
-		var colspan = 1;
-		var rowspan = 1;
-		var strColspan = null;
-		var strRowspan = null;
-
-		var $this = $(this);
-		if (strColspan = $this.attr('colspan')){
-			colspan = Number(strColspan);
-		}
-
-		if (strRowspan = $this.attr('rowspan')){
-			rowspan = Number(strRowspan);
-		}
-
-		colspans[length] = colspan;
-		colspans[length] = rowspan;
-		for (var i = 0; i < colspan; i++){
-			colspans.push(0);
-			rowspans.push(0);
-		}
-		length += colspan;
-	});
 	return {
 		length : length,
 		colspans : colspans,
