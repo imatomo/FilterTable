@@ -4,4 +4,4 @@ under construction
 
 lisence
 ===========
-Copyright &copy; 2008 imatomo imatomo.pro@gmail.com All Rights Reserved.
+Copyright &copy; 2013 imatomo imatomo.pro@gmail.com All Rights Reserved.
